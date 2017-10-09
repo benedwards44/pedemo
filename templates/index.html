@@ -28,6 +28,10 @@
 
         <div class="container">
 
+            <div class="text-center">
+                <p class="lead">Messages will show when created from Salesforce</p>
+            </div>
+
             <ul class="list-group" id="messages"></ul>
 
         </div>
@@ -46,21 +50,27 @@
 
                 var cometd = $.cometd;
 
-                // Connect to the CometD endpoint
-                cometd.init({
-                    url: '{{ base_url }}',
-                    requestHeaders: { Authorization: 'OAuth {{ access_token }}'},
-                    appendMessageTypeToURL: false,
-                    logLevel: 'debug'
-                });
+                try {
+                    // Connect to the CometD endpoint
+                    cometd.init({
+                        url: '{{ base_url }}',
+                        requestHeaders: { Authorization: 'OAuth {{ access_token }}'},
+                        appendMessageTypeToURL: false,
+                        logLevel: 'debug'
+                    });
 
-                var subscription = cometd.subscribe('{{ channel_url }}', function(message) {
-                    var html = '<li class="list-group-item">';
-                    html += '<small class="text-muted">' + message.data.payload.CreatedDate + '</small>';
-                    html += '<h3>' + message.data.payload.DeveloperNitish__Message__c; + '</h3>';
-                    html += '</li>';
-                    $('#messages').append(html);
-                });
+                    var subscription = cometd.subscribe('{{ channel_url }}', function(message) {
+                        var html = '<li class="list-group-item">';
+                        html += '<small class="text-muted">' + message.data.payload.CreatedDate + '</small>';
+                        html += '<h3>' + message.data.payload.DeveloperNitish__Message__c; + '</h3>';
+                        html += '</li>';
+                        $('#messages').append(html);
+                    });
+                }
+                catch(err) {
+
+                    $('.container').html('<div class="alert alert-danger" role="alert">Error loading Platform Events.</div>');
+                }
             });
         </script>
     </body>
