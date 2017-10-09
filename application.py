@@ -9,10 +9,11 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route("/")
 def index():
+    result = get_access_token()
     return render_template(
         'index.html', 
-        access_token=get_access_token(),
-        base_url='https://nitishsinghaltest-dev-ed.lightning.force.com/cometd/40.0/',
+        access_token=result.get('access_token'),
+        base_url=result.get('instance_url') + '/cometd/40.0',
         channel_url='/event/DeveloperNitish__Notification__e'
     )
 
@@ -25,5 +26,4 @@ def get_access_token():
     CONSUMER_SECRET = '6377572954480626031'
     url = 'https://login.salesforce.com/services/oauth2/token'
     body = 'grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s' % (CONSUMER_KEY, CONSUMER_SECRET, USERNAME, PASSWORD)
-    result = requests.post(url, data=body, headers={'Content-Type':'application/x-www-form-urlencoded'})
-    return result.json().get('access_token')
+    return requests.post(url, data=body, headers={'Content-Type':'application/x-www-form-urlencoded'}).json()
